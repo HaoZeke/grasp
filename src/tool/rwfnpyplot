@@ -46,7 +46,7 @@ if filename == "--help":
     """.format(sys.argv[0]) )
     sys.exit()
 
-if not len(sys.argv) >= 5:
+if len(sys.argv) < 5:
     sys.exit("""
       Error: please provide correct command line arguments.
 
@@ -59,27 +59,20 @@ pq             = sys.argv[3]        # 'P' or 'Q' (or small letters)
 max_r          = float(sys.argv[4]) # max radius
 if len(sys.argv) == 6:
     plot_to_screen = sys.argv[5]    # plot to screen? If not then save as pdf (default)
-    if plot_to_screen in ['True', 'T', 'y', 'Y']:
-        plot_to_screen = True
-    else:
-        plot_to_screen = False
+    plot_to_screen = plot_to_screen in ['True', 'T', 'y', 'Y']
 else:
     plot_to_screen = False
 
-orbital_grasp = pq.capitalize()+'('+nls+')'
+orbital_grasp = f'{pq.capitalize()}({nls})'
 orbital_dbsr  = pq.lower()+nls
 
-if pq.capitalize() == 'P':
-    function_type = 'P'
-else:
-    function_type = 'Q'
-
+function_type = 'P' if pq.capitalize() == 'P' else 'Q'
 if plot_to_screen:
     message = 'to screen...'
 else:
     message = 'to pdf: '+filename.split(".")[0]+'_plot.pdf...'
 
-print('  Plotting '+function_type+'('+nls+') '+message)
+print(f'  Plotting {function_type}({nls}) {message}')
 
 # start analyze <name>.plot and plot selected orbital
 first_line = True
@@ -90,7 +83,7 @@ for line in open(filename, 'r'):
         # find which orbital to plot
         i_orb = 1
         for orb in line.split()[1:]:
-            if orb == orbital_grasp or orb == orbital_dbsr:
+            if orb in [orbital_grasp, orbital_dbsr]:
                 break
             else:
                 i_orb += 1
@@ -106,7 +99,7 @@ for line in open(filename, 'r'):
 plt.axhline(y=0.0, color='black', lw=0.75, ls='--')
 plt.plot(X[1:], Y[1:], label = orbital_grasp)
 plt.xlabel('r[a.u.]')
-plt.ylabel(function_type+'(r)')
+plt.ylabel(f'{function_type}(r)')
 plt.xlim([0,max_r])
 plt.legend()
 
